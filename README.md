@@ -16,7 +16,7 @@ does imports and exports
 
 only works on elfs for now
 
-# Ps3GhidraScripts – Python 3 Version
+# ps3.py – Python 3 Version
 
 This is a fork of the original ps3_ghidra by freemanZYQ, 
 updated for Python 3 (Ghidra 11.3+ / PyGhidra).
