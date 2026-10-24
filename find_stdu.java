@@ -70,10 +70,23 @@ public class find_stdu extends GhidraScript {
 					continue;
 				}
 
-				if (expectedPattern.isMatch(undefinedAddress)) {
-					disassemble(undefinedAddress);
-					createFunction(undefinedAddress, null);
-					address = undefinedAddress.add(1);
+				if ((undefinedAddress.getOffset() & 3) == 0
+						&& expectedPattern.isMatch(undefinedAddress)) {
+					boolean isPrologue = false;
+					try {
+						int word = currentProgram.getMemory().getInt(undefinedAddress);
+						// echte Prologe: stdu r1, NEGATIVEM Displacement
+						isPrologue = (word & 0x8000) != 0;
+					}
+					catch (MemoryAccessException e) {
+						isPrologue = false;
+					}
+					// disassemble() liefert auch true, wenn nichts erzeugt wurde!
+					if (isPrologue && disassemble(undefinedAddress)
+							&& getInstructionAt(undefinedAddress) != null) {
+						createFunction(undefinedAddress, null);
+					}
+					address = undefinedAddress.add(4);
 				}
 				else {
 					address = undefinedAddress;

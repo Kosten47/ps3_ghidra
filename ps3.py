@@ -209,7 +209,12 @@ while addr < opd_sect.getEnd():
     func_ptr = toAddr(memory.getInt(addr))
     func_toc = memory.getInt(addr.add(0x4))
     
-    createFunction(func_ptr, None)
+    try:
+        createFunction(func_ptr, None)
+    except Exception as ex:
+        print("  createFunction(%s) fehlgeschlagen: %s" % (func_ptr, ex))
+        addr = addr.add(0x8)
+        continue
     func = getFunctionAt(func_ptr)
     
     # NUR WEITERMACHEN, WENN FUNKTION EXISTIERT!
@@ -230,4 +235,4 @@ while addr < opd_sect.getEnd():
         tocValue = RegisterValue(r2reg, BigInteger.valueOf(func_toc))
         currentProgram.getProgramContext().setRegisterValue(func_min, func_max, tocValue)
     
-    addr = addr.add(0x18)
+    addr = addr.add(0x8)
